@@ -1,0 +1,21 @@
+{
+  "name": "wp_plugin_scaffolding",
+  "version": "0.0.1",
+  "homepage": "",
+  "authors": [
+    "Cesar Herrera <cesar.beethoven@widget-pc.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.1",
+    "font-awesome": "~4.2.0",
+    "google-chart": "1.0.0"
+  }
+}
