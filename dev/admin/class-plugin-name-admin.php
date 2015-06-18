@@ -108,8 +108,6 @@ class Plugin_Name_Admin {
 			<!-- bower:js -->
 			<script src="../../bower_components/jquery/dist/jquery.js"></script>
 			<script src="../../bower_components/bootstrap/dist/js/bootstrap.js"></script>
-			<script src="../../bower_components/webcomponentsjs/webcomponents.js"></script>
-			<script src="../../bower_components/promise-polyfill/Promise.js"></script>
 			<!-- endbower -->
 		<!-- endbuild -->
 

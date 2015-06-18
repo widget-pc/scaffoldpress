@@ -33,9 +33,9 @@ var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'browser-sync', 'wiredep', 'del', 'browser-sync']
 });
 
-var bower = require('gulp-bower');
 gulp.task('bower-install', function() {
-  return bower({ directory: './bower_components'});
+  return $.bower({ directory: './bower_components'});
+  
 });
  
 
@@ -45,6 +45,7 @@ var jsSources = [public_base+'js/*.js', admin_base+'js/*.js'];
 
 function processSrc(src, name, type, dest){
     gulp.src(src)
+    .pipe($.plumber({ errorHandler: onError }))
     .pipe($.if(isDevelopment(), $.sourcemaps.init()))
     .pipe($.concat(name+'.'+type))
     .pipe($.if(type=='js', $.uglify()))
@@ -79,7 +80,8 @@ gulp.task('optimizer-js-less', function() {
 
 
 function installBowerIn(type){
-  return gulp.src('dev/'+type+'/class-plugin-name-'+type+'.php')
+  return gulp.src('dev/'+type+'/*.php')
+    .pipe($.plumber({ errorHandler: onError }))
     .pipe(wiredep({
       directory: './bower_components',
       exclude: [],
@@ -96,6 +98,16 @@ gulp.task('bower', function() {
 });
 
 
+//////////////////////
+// OnError function //
+//////////////////////
+
+var onError = function(err) {
+       console.log(err);
+       $.util.beep(); 
+};
+
+
 
 function injectBower(type){
 
@@ -103,7 +115,8 @@ function injectBower(type){
   var css = $.filter('**/*.css'),
         js  = $.filter('**/*.js'),
         assets = $.useref.assets(),
-        stream = gulp.src('dev/'+type+'/class-plugin-name-'+type+'.php');
+        stream = gulp.src('dev/'+type+'/class-plugin-name-'+type+'.php')
+                       .pipe($.plumber({ errorHandler: onError }));
 
     return stream.pipe(assets)                              // Select all assets in the 'build' tag in the html file
                  .pipe(css)                                 // Select only .css assets
@@ -137,6 +150,7 @@ gulp.task('inject-bower-dep', function () {
 ///////////////////////////////
 gulp.task('fonts', function(){
     gulp.src('dev/assets/fonts/**')
+        .pipe($.plumber({ errorHandler: onError }))
         .pipe(gulp.dest('dist/fonts'))
         .pipe($.browserSync.reload({ stream: true }));
 });
@@ -157,6 +171,7 @@ gulp.task('images', function(){
 ///////////////////////////////
 gulp.task('icons', function(){
     gulp.src('dev/assets/icons/**')
+        .pipe($.plumber({ errorHandler: onError }))
         .pipe(gulp.dest('dist/icons'))
         .pipe($.browserSync.reload({ stream: true }));
 });
@@ -166,6 +181,7 @@ gulp.task('icons', function(){
 //////////////////////////////////
 gulp.task('php-admin-change', function(){
     gulp.src('dev/admin/*.php')
+        .pipe($.plumber({ errorHandler: onError }))
         .pipe(gulp.dest('dist/admin'))
         .pipe($.browserSync.reload({ stream: true }));
 });
@@ -175,6 +191,7 @@ gulp.task('php-admin-change', function(){
 ///////////////////////////////////
 gulp.task('php-public-change', function(){
     gulp.src('dev/public/*.php')
+        .pipe($.plumber({ errorHandler: onError }))
         .pipe(gulp.dest('dist/public'))
         .pipe($.browserSync.reload({ stream: true }));
 });
@@ -275,6 +292,8 @@ gulp.task('watch', function(){
 //////////////////////
 gulp.task('default', function() {
   //gulp.app;
-  $.runSequence('copy-base', 'bower', 'optimizer-js-less','inject-bower-dep', 'assets', 'browser-sync', 'watch');
-
+  $.runSequence( 'bower', function(){
+    $.runSequence('copy-base', 'optimizer-js-less','inject-bower-dep', 'assets', 'browser-sync', 'watch');
+  });
+  
 });
